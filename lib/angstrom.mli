@@ -678,3 +678,6 @@ end
 
 val pos : int t
 val available : int t
+
+val lookback_char : char option t
+val lookback_string : int -> string option t

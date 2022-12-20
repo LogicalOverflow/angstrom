@@ -742,3 +742,22 @@ let parse_string ~consume p s =
   let bs  = Bigstringaf.create len in
   Bigstringaf.unsafe_blit_from_string s ~src_off:0 bs ~dst_off:0 ~len;
   parse_bigstring ~consume p bs
+
+
+let lookback_char =
+  { run = fun input pos more _fail succ ->
+    if 0 < pos then
+      succ input pos more (Some (Input.unsafe_get_char input (pos - 1)))
+    else
+      succ input pos more None
+  }
+
+let lookback_string n =
+  { run = fun input pos more _fail succ ->
+    if n <= pos then
+      succ input pos more
+        (Input.apply input (pos - n) n
+           ~f:(fun bs ~off ~len -> Some (Bigstringaf.substring bs ~off ~len)))
+    else
+      succ input pos more None
+  }
